@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -29,11 +30,11 @@ const (
 
 // response options
 const (
-	OK = "200 OK"
-	BAD_REQUEST = "400 Bad request"
-	NOT_FOUND = "404 Not found"
-	GONE = "418 Gone"
-	LOCKED = "423 Locked"
+	OK           = "200 OK"
+	BAD_REQUEST  = "400 Bad request"
+	NOT_FOUND    = "404 Not found"
+	GONE         = "418 Gone"
+	LOCKED       = "423 Locked"
 	SERVER_ERROR = "500 Server Error"
 )
 
@@ -93,39 +94,119 @@ func listDirectory(path string) string {
 	return results.String()
 }
 
-func handleRequest(conn net.Conn) {
+type Response struct {
+	protocol   string
+	statusCode string
+	headers    []string
+	message    string
+}
 
+func createResponse(response Response) string {
+	responseString := response.protocol + " " + response.statusCode + "\n" + strings.Join(response.headers, "\n") + "\n\n" + response.message
+	return responseString
+}
+
+type Request struct {
+	method     string
+	protocol   string
+	headers    []string
+	parameters []string
+}
+
+func handleRequest(conn net.Conn) {
 	buf := make([]byte, 1024)
 
 	//Read the incoming connection into the buffer
 	_, err := conn.Read(buf)
 
 	requestString := strings.Fields(string(buf))
-
-	fmt.Println(requestString[0])
-
-	var response string
-
-	switch requestString[0] {
-	case GET:
-		getFile(requestString[1])
-	case LIST:
-		response = listDirectory(requestString[1])
-	default:
-		response = BAD_REQUEST + "\n\n"
-	}
+	println(requestString)
 
 	if err != nil {
 		fmt.Println("Error reading", err.Error())
-		returnResponse(SERVER_ERROR, conn)
+		handleServerError(conn)
 	}
-	_, _ = conn.Write([]byte(response))
 
-	_ = conn.Close()
+	if len(requestString) < 4 {
+		handleBadRequest(conn)
+	}
+	parsedRequest := parseRequest(requestString)
+	switch parsedRequest.method {
+	case GET:
+		handleGetRequest(parsedRequest, conn)
+	case LIST:
+		handleListRequest(parsedRequest, conn)
+	default:
+		handleBadRequest(conn)
+	}
 
 }
 
+func handleGetRequest(request Request, conn net.Conn) {
 
-func returnResponse(response_code string, conn net.Conn) {
-	_, _ =conn.Write([]byte(response_code))
+}
+
+func handleListRequest(request Request, conn net.Conn) {
+	response := Response{
+		protocol:   VERSION,
+		statusCode: OK,
+		headers:    nil,
+		message:    listDirectory(request.parameters[0]),
+	}
+
+	fmt.Print(response)
+	doHandle(response, conn)
+}
+
+func parseRequest(requestString []string) Request {
+	parseRequest := Request{
+		method:   requestString[0],
+		protocol: requestString[2],
+		headers:  nil,
+		// TODO: Parameter parsing logic
+		parameters: []string{requestString[1]},
+	}
+
+	fmt.Println(parseRequest)
+	return parseRequest
+}
+
+func handleBadRequest(conn net.Conn) {
+	createdResponse := Response{
+		protocol:   VERSION,
+		statusCode: BAD_REQUEST,
+		headers:    nil,
+		message:    "YOU SUCK",
+	}
+
+	doHandle(createdResponse, conn)
+}
+
+func handleServerError(conn net.Conn) {
+	createdResponse := Response{
+		protocol:   VERSION,
+		statusCode: SERVER_ERROR,
+		headers:    nil,
+		message:    "YOU SUCK",
+	}
+
+	doHandle(createdResponse, conn)
+}
+
+func doHandle(response Response, conn net.Conn) {
+	_, _ = conn.Write([]byte(createResponse(response)))
+	conn.Close()
+}
+
+func returnResponse(responseCode string) string {
+	var content = ""
+	var headers []string
+
+	// TODO: FIX HEADERS
+	if content != "" {
+		headers[0] = "Content-Length: " + strconv.Itoa(len(content))
+	} else {
+		headers[0] = "Content-Length: 0"
+	}
+	return VERSION + " " + responseCode + "\n" + strings.Join(headers, "\n")
 }
