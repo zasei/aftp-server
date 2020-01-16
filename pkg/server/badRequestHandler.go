@@ -6,12 +6,12 @@ import (
 	"net"
 )
 
-func handleBadRequest(conn net.Conn) {
+func handleBadRequest(conn net.Conn, message string) {
 	createdResponse := dom.Response{
 		Protocol:   dom.ProtocolVersion,
 		StatusCode: dom.BAD_REQUEST,
 		Headers:    nil,
-		Content:    "YOU SUCK",
+		Content:    message,
 	}
 
 	fmt.Printf("handleBadRequest with response: %s\n", createdResponse)

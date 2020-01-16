@@ -15,11 +15,11 @@ type Response struct {
 	Content    string
 }
 
-func NewResponseWithContent(statusCode string, headers []string, content string) Response {
+func NewResponseWithContent(statusCode string, content string) Response {
 	response := Response{}
 	response.Protocol = ProtocolVersion
 	response.StatusCode = statusCode
-	response.Headers = headers
+	response.Headers = []string{fmt.Sprintf("Content-Length: %d", CalculateContentLength(content))}
 	response.Content = content
 	return response
 }
@@ -27,14 +27,6 @@ func NewResponseWithContent(statusCode string, headers []string, content string)
 func NewResponseNotFound() Response {
 	response := Response{}
 	response.StatusCode = NOT_FOUND
-	response.Content = ""
-	response.Protocol = ProtocolVersion
-	return response
-}
-
-func NewResponseNoContent(statuscode string) Response {
-	response := Response{}
-	response.StatusCode = statuscode
 	response.Content = ""
 	response.Protocol = ProtocolVersion
 	return response
@@ -67,7 +59,7 @@ func ParseResponse(buf bytes.Buffer) Response {
 	} else if strings.Contains(responseString, SERVER_ERROR) {
 		receivedResponse.StatusCode = SERVER_ERROR
 	} else {
-		fmt.Println("Unable to get status code from response")
+		fmt.Println("Unable to get status code from response, got: " + responseString)
 		os.Exit(1)
 	}
 

@@ -8,10 +8,7 @@ import (
 
 func handleServerError(conn net.Conn) {
 	message := "A server error occured"
-	// TODO: calculcate byte size
-	headers := []string{fmt.Sprintf("Content-Length: %d", 10)}
-
-	createdResponse := dom.NewResponseWithContent(dom.SERVER_ERROR, headers, message)
+	createdResponse := dom.NewResponseWithContent(dom.SERVER_ERROR, message)
 
 	fmt.Printf("handleServerError with response: %s\n", createdResponse)
 	doHandle(createdResponse, conn)

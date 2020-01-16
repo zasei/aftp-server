@@ -15,12 +15,10 @@ func handleListRequest(request dom.Request, conn net.Conn) {
 	if len(content) == 0 || strings.Contains(content, "no files found") {
 		createdResponse = dom.NewResponseNotFound()
 	} else {
-		// TODO: calculcate byte size
-		headers := []string{fmt.Sprintf("Content-Length: %d", 10)}
-		createdResponse = dom.NewResponseWithContent(dom.OK, headers, content)
+		createdResponse = dom.NewResponseWithContent(dom.OK, content)
 	}
 
-	fmt.Printf("handleListRequest with createResponse: %s\n", createdResponse)
+	createdResponse.PrintResponse()
 	doHandle(createdResponse, conn)
 }
 

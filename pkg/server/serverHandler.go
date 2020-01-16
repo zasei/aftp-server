@@ -24,16 +24,25 @@ func HandleRequest(conn net.Conn) {
 	}
 
 	if len(requestString) < 3 {
-		handleBadRequest(conn)
+		handleBadRequest(conn, "invalid use of protocol")
 	}
 	parsedRequest := dom.ParseRequest(requestString)
+
+	if !strings.Contains(parsedRequest.Protocol, dom.ProtocolVersion) {
+		handleBadRequest(conn, fmt.Sprintf("unknown protocol %s, wanted %s", parsedRequest.Protocol, dom.ProtocolVersion))
+	}
+
 	switch parsedRequest.Method {
 	case dom.GET:
 		handleGetRequest(parsedRequest, conn)
 	case dom.LIST:
 		handleListRequest(parsedRequest, conn)
+	case dom.PUT:
+		handlePutRequest(parsedRequest, conn)
+	case dom.DELETE:
+		handleDeleteRequest(parsedRequest, conn)
 	default:
-		handleBadRequest(conn)
+		handleBadRequest(conn, "unknown/unsupported method: "+parsedRequest.Method)
 	}
 }
 

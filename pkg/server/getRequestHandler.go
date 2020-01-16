@@ -15,15 +15,13 @@ func handleGetRequest(request dom.Request, conn net.Conn) {
 	filesData := getFiles(request.Parameter)
 	if len(filesData) == 0 {
 		createdResponse = dom.NewResponseNotFound()
-		createdResponse.StatusCode = dom.NOT_FOUND
 	} else {
-		createdResponse.StatusCode = dom.OK
-		createdResponse.Content = strings.Join(filesData, "\r\n")
+		content := strings.Join(filesData, "\r\n")
+		createdResponse = dom.NewResponseWithContent(dom.OK, content)
 	}
 
-	fmt.Printf("handleGetRequest with createdResponse: %s\n", createdResponse)
+	createdResponse.PrintResponse()
 	doHandle(createdResponse, conn)
-
 }
 
 func getFiles(parameter string) []string {
