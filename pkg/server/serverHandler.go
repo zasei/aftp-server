@@ -8,7 +8,7 @@ import (
 )
 
 // TODO: Change to other relative path
-const FileDir = "/home/rcomanne/workspace/aftp-server/files"
+const FileDir = "/home/rcomanne/go/src/aftp-server/files"
 
 func HandleRequest(conn net.Conn) {
 	buf := make([]byte, 1024)
@@ -39,10 +39,16 @@ func HandleRequest(conn net.Conn) {
 
 func doHandle(response dom.Response, conn net.Conn) {
 	fmt.Println("doHandle")
-	createdResponse := dom.CreateResponse(response)
+	createdResponse := response.CreateResponse()
 	_, _ = conn.Write([]byte(createdResponse))
 	err := conn.Close()
 	if err != nil {
 		fmt.Printf("Error sending response %s", err)
+	}
+}
+
+func check(e error) {
+	if e != nil {
+		panic(e)
 	}
 }

@@ -10,8 +10,7 @@ import (
 )
 
 // Handle the actual network connection and parsing
-func doHandle(request dom.Request) {
-	fmt.Println("doHandle")
+func doHandle(request dom.Request) dom.Response {
 	// Set up connection to remote
 	conn, err := net.Dial(dom.TYPE, dom.HOST+":"+dom.PORT)
 	if err != nil {
@@ -24,6 +23,9 @@ func doHandle(request dom.Request) {
 	// Create the request as a String literal
 	requestString := request.RequestToString()
 
+	// Uncomment this line to view the request string
+	//fmt.Printf("Request String: %s\n", requestString)
+
 	// Write to remote connection
 	fmt.Fprintf(conn, requestString)
 
@@ -32,5 +34,8 @@ func doHandle(request dom.Request) {
 	io.Copy(&buf, conn)
 	receivedResponse := dom.ParseResponse(buf)
 
-	receivedResponse.PrintResponse()
+	// uncomment this line to show the full parse response
+	//receivedResponse.PrintResponse()
+
+	return receivedResponse
 }

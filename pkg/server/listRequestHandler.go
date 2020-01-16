@@ -4,21 +4,24 @@ import (
 	dom "aftp-server/pkg/domain"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 	"strings"
 )
 
 func handleListRequest(request dom.Request, conn net.Conn) {
-	createResponse := dom.Response{
-		Protocol:   dom.ProtocolVersion,
-		StatusCode: dom.OK,
-		Headers:    nil,
-		Message:    listDirectory(request.Parameter),
+	content := listDirectory(request.Parameter)
+
+	var createdResponse dom.Response
+	if len(content) == 0 || strings.Contains(content, "no files found") {
+		createdResponse = dom.NewResponseNotFound()
+	} else {
+		// TODO: calculcate byte size
+		headers := []string{fmt.Sprintf("Content-Length: %d", 10)}
+		createdResponse = dom.NewResponseWithContent(dom.OK, headers, content)
 	}
 
-	fmt.Printf("handleLisRequest with createResponse: %s\n", createResponse)
-	doHandle(createResponse, conn)
+	fmt.Printf("handleListRequest with createResponse: %s\n", createdResponse)
+	doHandle(createdResponse, conn)
 }
 
 func listDirectory(path string) string {
@@ -26,13 +29,13 @@ func listDirectory(path string) string {
 	files, err := ioutil.ReadDir(FileDir + path)
 
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Sprintf("no files found for %s", path)
 	}
 
 	var results strings.Builder
 
 	for _, f := range files {
-		results.WriteString(f.Name() + "\n")
+		results.WriteString(fmt.Sprintf("%s %d %s\n", f.Name(), f.ModTime().Unix(), "MD5 HERE"))
 	}
 
 	return results.String()

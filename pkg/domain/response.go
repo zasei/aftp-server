@@ -12,12 +12,41 @@ type Response struct {
 	Protocol   string
 	StatusCode string
 	Headers    []string
-	Message    string
+	Content    string
+}
+
+func NewResponseWithContent(statusCode string, headers []string, content string) Response {
+	response := Response{}
+	response.Protocol = ProtocolVersion
+	response.StatusCode = statusCode
+	response.Headers = headers
+	response.Content = content
+	return response
+}
+
+func NewResponseNotFound() Response {
+	response := Response{}
+	response.StatusCode = NOT_FOUND
+	response.Content = ""
+	response.Protocol = ProtocolVersion
+	return response
+}
+
+func NewResponseNoContent(statuscode string) Response {
+	response := Response{}
+	response.StatusCode = statuscode
+	response.Content = ""
+	response.Protocol = ProtocolVersion
+	return response
 }
 
 func ParseResponse(buf bytes.Buffer) Response {
 	// convert byte buffer to string
 	responseString := buf.String()
+
+	// uncomment this line to show the response before parsing
+	//fmt.Printf("Response string received: %s\n", responseString)
+
 	splitResponse := strings.Split(responseString, "\r\n")
 
 	splitFirstLine := strings.Split(splitResponse[0], " ")
@@ -44,27 +73,47 @@ func ParseResponse(buf bytes.Buffer) Response {
 
 	// TODO: figure out how to split rest properly
 	if len(splitResponse) == 2 {
-		receivedResponse.Message = splitResponse[1]
+		receivedResponse.Content = splitResponse[1]
 	}
+	if len(splitResponse) == 3 {
+		receivedResponse.Headers = make([]string, 1)
+		receivedResponse.Headers[0] = splitResponse[1]
+		receivedResponse.Content = splitResponse[2]
+	}
+
+	//fmt.Printf("Showing split response lines, total length: %d\n", len(splitResponse))
+	//for _, s := range splitResponse {
+	//	fmt.Println(s)
+	//}
 
 	return receivedResponse
 }
 
-func CreateResponse(response Response) string {
-	if len(response.Headers) != 0 {
-		if len(response.Message) == 0 {
-			return response.Protocol + " " + response.StatusCode + "\r\n" + strings.Join(response.Headers, "\r\n") + "\r\n" + response.Message
+func (r Response) CreateResponse() string {
+	if len(r.Headers) != 0 {
+		if len(r.Content) == 0 {
+			return r.Protocol + " " + r.StatusCode + "\r\n" + strings.Join(r.Headers, "\r\n") + "\r\n"
 		} else {
-			return response.Protocol + " " + response.StatusCode + "\r\n" + strings.Join(response.Headers, "\r\n") + "\r\n"
+			return r.Protocol + " " + r.StatusCode + "\r\n" + strings.Join(r.Headers, "\r\n") + "\r\n" + r.Content
 		}
 	}
-	if len(response.Message) != 0 {
-		return response.Protocol + " " + response.StatusCode + "\r\n" + response.Message
+	if len(r.Content) != 0 {
+		return r.Protocol + " " + r.StatusCode + "\r\n" + r.Content
 	} else {
-		return response.Protocol + " " + response.StatusCode
+		return r.Protocol + " " + r.StatusCode + "\r\n"
+	}
+}
+
+func (r Response) PrintClientResponse() {
+	switch r.StatusCode {
+	case OK:
+		fmt.Println(r.Content)
+	default:
+	case BAD_REQUEST, SERVER_ERROR:
+		fmt.Printf("%s\n%s", r.StatusCode, r.Content)
 	}
 }
 
 func (r Response) PrintResponse() {
-	fmt.Printf("Response: { Protocol: %s, StatusCode: %s, Headers: %s, Message: %s } \n", r.Protocol, r.StatusCode, r.Headers, r.Message)
+	fmt.Printf("Response: { Protocol: %s, StatusCode: %s, Headers: %s, Content: %s } \n", r.Protocol, r.StatusCode, r.Headers, r.Content)
 }

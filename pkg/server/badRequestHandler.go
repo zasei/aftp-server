@@ -11,7 +11,7 @@ func handleBadRequest(conn net.Conn) {
 		Protocol:   dom.ProtocolVersion,
 		StatusCode: dom.BAD_REQUEST,
 		Headers:    nil,
-		Message:    "YOU SUCK",
+		Content:    "YOU SUCK",
 	}
 
 	fmt.Printf("handleBadRequest with response: %s\n", createdResponse)

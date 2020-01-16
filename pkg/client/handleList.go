@@ -13,5 +13,7 @@ func HandleListRequest(dirs []string) {
 		Parameter: strings.Join(dirs, ","),
 	}
 
-	doHandle(request)
+	response := doHandle(request)
+
+	response.PrintClientResponse()
 }

@@ -13,5 +13,6 @@ func HandleGetRequest(files []string) {
 		Parameter: strings.Join(files, ","),
 	}
 
-	doHandle(request)
+	response := doHandle(request)
+	response.PrintClientResponse()
 }

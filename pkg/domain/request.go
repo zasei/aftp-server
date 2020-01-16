@@ -23,12 +23,12 @@ func (request Request) RequestToString() string {
 }
 
 func ParseRequest(requestString []string) Request {
-	parameters := []string{requestString[1], requestString[2]}
+	// TODO: Parameter parsing logic
+	parameters := []string{requestString[1]}
 	parseRequest := Request{
-		Method:   requestString[0],
-		Protocol: requestString[2],
-		Headers:  nil,
-		// TODO: Parameter parsing logic
+		Method:    requestString[0],
+		Protocol:  requestString[2],
+		Headers:   nil,
 		Parameter: strings.Join(parameters, ","),
 	}
 
