@@ -19,13 +19,13 @@ func main() {
 	l, err := net.Listen(TYPE, HOST+":"+PORT)
 
 	if err != nil {
-		fmt.Printf("Error listening on %s:%s", HOST, PORT)
+		fmt.Printf("Error listening on %s:%s\n", HOST, PORT)
 		os.Exit(1)
 	}
 
 	defer l.Close()
 
-	fmt.Printf("Listening on %s:%s", HOST, PORT)
+	fmt.Printf("Listening on %s:%s\n", HOST, PORT)
 
 	for {
 		conn, err := l.Accept()

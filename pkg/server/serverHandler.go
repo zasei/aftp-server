@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-const VERSION = "AFTP/1.0"
-const FILE_DIR = "files"
+const ProtocolVersion = "AFTP/1.0"
+const FileDir = "/home/rcomanne/workspace/aftp-server/files"
 
 // request options
 const (
@@ -55,7 +55,9 @@ func HandleRequest(conn net.Conn) {
 }
 
 func doHandle(response Response, conn net.Conn) {
-	_, _ = conn.Write([]byte(createResponse(response)))
+	fmt.Println("doHandle")
+	createdResponse := createResponse(response)
+	_, _ = conn.Write([]byte(createdResponse))
 	err := conn.Close()
 	if err != nil {
 		fmt.Printf("Error sending response %s", err)
@@ -89,13 +91,16 @@ type Response struct {
 }
 
 func createResponse(response Response) string {
-	var responseString string
-	if len(response.headers) == 0 {
-		responseString = response.protocol + " " + response.statusCode + "\n" + strings.Join(response.headers, "\n") + "\n\n" + response.message
-	} else if len(response.message) != 0 {
-		responseString = response.protocol + " " + response.statusCode + "\n" + response.message
-	} else {
-		responseString = response.protocol + " " + response.statusCode
+	if len(response.headers) != 0 {
+		if len(response.message) == 0 {
+			return response.protocol + " " + response.statusCode + "\r\n" + strings.Join(response.headers, "\r\n") + "\r\n" + response.message
+		} else {
+			return response.protocol + " " + response.statusCode + "\r\n" + strings.Join(response.headers, "\r\n") + "\r\n"
+		}
 	}
-	return responseString
+	if len(response.message) != 0 {
+		return response.protocol + " " + response.statusCode + "\r\n" + response.message
+	} else {
+		return response.protocol + " " + response.statusCode
+	}
 }

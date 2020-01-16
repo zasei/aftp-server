@@ -9,19 +9,20 @@ import (
 )
 
 func handleListRequest(request Request, conn net.Conn) {
-	response := Response{
-		protocol:   VERSION,
+	createResponse := Response{
+		protocol:   ProtocolVersion,
 		statusCode: OK,
 		headers:    nil,
 		message:    listDirectory(request.parameters[0]),
 	}
 
-	fmt.Print(response)
-	doHandle(response, conn)
+	fmt.Printf("handleLisRequest with createResponse: %s\n", createResponse)
+	doHandle(createResponse, conn)
 }
 
 func listDirectory(path string) string {
-	files, err := ioutil.ReadDir("./" + FILE_DIR + path)
+	//files, err := ioutil.ReadDir("./" + FileDir + path)
+	files, err := ioutil.ReadDir(FileDir + path)
 
 	if err != nil {
 		log.Fatal(err)
