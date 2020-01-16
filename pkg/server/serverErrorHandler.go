@@ -1,16 +1,17 @@
 package server
 
 import (
+	dom "aftp-server/pkg/domain"
 	"fmt"
 	"net"
 )
 
 func handleServerError(conn net.Conn) {
-	createdResponse := Response{
-		protocol:   ProtocolVersion,
-		statusCode: SERVER_ERROR,
-		headers:    nil,
-		message:    "YOU SUCK",
+	createdResponse := dom.Response{
+		Protocol:   dom.ProtocolVersion,
+		StatusCode: dom.SERVER_ERROR,
+		Headers:    nil,
+		Message:    "YOU SUCK",
 	}
 
 	fmt.Printf("handleServerError with response: %s\n", createdResponse)

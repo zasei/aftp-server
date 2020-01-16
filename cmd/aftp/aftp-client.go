@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	ls string
-	cp string
+	list string
+	get  string
 )
 
 func main() {
@@ -23,15 +23,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	if len(ls) != 0 {
-		dirs := strings.Split(ls, ",")
+	if len(list) != 0 {
+		dirs := strings.Split(list, ",")
 		fmt.Printf("Listing files for: %s\n", dirs)
-		handler.HandleRequest(dirs)
+		handler.HandleListRequest(dirs)
+	} else if len(get) != 0 {
+		files := strings.Split(get, ",")
+		fmt.Printf("")
+		handler.HandleGetRequest(files)
 	}
 
 }
 
 func init() {
-	flag.StringVarP(&ls, "list", "l", "", "List files")
-	flag.StringVarP(&cp, "copy", "c", "", "Copy file")
+	flag.StringVarP(&list, "list", "l", "", "List files")
+	flag.StringVarP(&get, "get", "g", "", "Copy file")
 }

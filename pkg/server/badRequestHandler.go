@@ -1,16 +1,17 @@
 package server
 
 import (
+	dom "aftp-server/pkg/domain"
 	"fmt"
 	"net"
 )
 
 func handleBadRequest(conn net.Conn) {
-	createdResponse := Response{
-		protocol:   ProtocolVersion,
-		statusCode: BAD_REQUEST,
-		headers:    nil,
-		message:    "YOU SUCK",
+	createdResponse := dom.Response{
+		Protocol:   dom.ProtocolVersion,
+		StatusCode: dom.BAD_REQUEST,
+		Headers:    nil,
+		Message:    "YOU SUCK",
 	}
 
 	fmt.Printf("handleBadRequest with response: %s\n", createdResponse)

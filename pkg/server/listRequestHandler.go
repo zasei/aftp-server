@@ -1,6 +1,7 @@
 package server
 
 import (
+	dom "aftp-server/pkg/domain"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -8,12 +9,12 @@ import (
 	"strings"
 )
 
-func handleListRequest(request Request, conn net.Conn) {
-	createResponse := Response{
-		protocol:   ProtocolVersion,
-		statusCode: OK,
-		headers:    nil,
-		message:    listDirectory(request.parameters[0]),
+func handleListRequest(request dom.Request, conn net.Conn) {
+	createResponse := dom.Response{
+		Protocol:   dom.ProtocolVersion,
+		StatusCode: dom.OK,
+		Headers:    nil,
+		Message:    listDirectory(request.Parameter),
 	}
 
 	fmt.Printf("handleLisRequest with createResponse: %s\n", createResponse)

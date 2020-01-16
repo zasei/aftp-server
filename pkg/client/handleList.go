@@ -1,11 +1,16 @@
 package client
 
-func HandleRequest(dirs []string) {
-	request := Request{
-		method:    LIST,
-		protocol:  VERSION,
-		headers:   nil,
-		parameter: dirs[0],
+import (
+	dom "aftp-server/pkg/domain"
+	"strings"
+)
+
+func HandleListRequest(dirs []string) {
+	request := dom.Request{
+		Method:    dom.LIST,
+		Protocol:  dom.ProtocolVersion,
+		Headers:   nil,
+		Parameter: strings.Join(dirs, ","),
 	}
 
 	doHandle(request)

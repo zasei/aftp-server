@@ -1,31 +1,25 @@
 package main
 
 import (
+	dom "aftp-server/pkg/domain"
 	"aftp-server/pkg/server"
 	"fmt"
 	"net"
 	"os"
 )
 
-// server settings
-const (
-	HOST = "127.0.0.1"
-	PORT = "1337"
-	TYPE = "tcp"
-)
-
 func main() {
 
-	l, err := net.Listen(TYPE, HOST+":"+PORT)
+	l, err := net.Listen(dom.TYPE, dom.HOST+":"+dom.PORT)
 
 	if err != nil {
-		fmt.Printf("Error listening on %s:%s\n", HOST, PORT)
+		fmt.Printf("Error listening on %s:%s\n", dom.HOST, dom.PORT)
 		os.Exit(1)
 	}
 
 	defer l.Close()
 
-	fmt.Printf("Listening on %s:%s\n", HOST, PORT)
+	fmt.Printf("Listening on %s:%s\n", dom.HOST, dom.PORT)
 
 	for {
 		conn, err := l.Accept()
