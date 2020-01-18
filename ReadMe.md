@@ -14,13 +14,16 @@ go get github.com/ogier/pflag
 To run and/or build, follow these steps:
 ```bash
 # Enter the dir of the client
-cd cmd/client
+cd cmd/aftp
 
 # This installs the binary locally
 go install
 
 # After which, you can run it like this:
 go run aftp-client.go
+# Or running it from the command line, as it is installed as a binary on your path (YAY Go)
+# Running this will show the command options
+aftp
 
 # Or build the binary like this:
 go build
