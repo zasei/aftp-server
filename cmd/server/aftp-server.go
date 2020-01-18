@@ -1,9 +1,9 @@
 package main
 
 import (
-	dom "aftp-server/pkg/domain"
-	"aftp-server/pkg/server"
 	"fmt"
+	dom "github.com/zasei/aftp-server/pkg/domain"
+	"github.com/zasei/aftp-server/pkg/server"
 	"net"
 	"os"
 )

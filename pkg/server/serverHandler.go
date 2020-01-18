@@ -1,14 +1,14 @@
 package server
 
 import (
-	dom "aftp-server/pkg/domain"
 	"fmt"
+	dom "github.com/zasei/aftp-server/pkg/domain"
 	"net"
 	"strings"
 )
 
 // TODO: Change to other relative path
-const FileDir = "/home/rcomanne/workspace/go/src/aftp-server/files"
+const FileDir = ""
 
 func HandleRequest(conn net.Conn) {
 	buf := make([]byte, 1024)
@@ -27,6 +27,8 @@ func HandleRequest(conn net.Conn) {
 		handleBadRequest(conn, "invalid use of protocol")
 	}
 	parsedRequest := dom.ParseRequest(requestString)
+
+	parsedRequest.PrintRequest()
 
 	if !strings.Contains(parsedRequest.Protocol, dom.ProtocolVersion) {
 		handleBadRequest(conn, fmt.Sprintf("unknown protocol %s, wanted %s", parsedRequest.Protocol, dom.ProtocolVersion))

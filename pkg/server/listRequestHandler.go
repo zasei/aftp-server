@@ -1,8 +1,8 @@
 package server
 
 import (
-	dom "aftp-server/pkg/domain"
 	"fmt"
+	dom "github.com/zasei/aftp-server/pkg/domain"
 	"io/ioutil"
 	"net"
 	"strings"
@@ -23,7 +23,6 @@ func handleListRequest(request dom.Request, conn net.Conn) {
 }
 
 func listDirectory(path string) string {
-	//files, err := ioutil.ReadDir("./" + FileDir + path)
 	files, err := ioutil.ReadDir(FileDir + path)
 
 	if err != nil {
@@ -33,7 +32,14 @@ func listDirectory(path string) string {
 	var results strings.Builder
 
 	for _, f := range files {
-		results.WriteString(fmt.Sprintf("%s %d %s\n", f.Name(), f.ModTime().Unix(), "MD5 HERE"))
+
+		md5 := ""
+
+		if !f.IsDir() {
+			md5, _ = dom.HashFileMd5(path + "/" + f.Name())
+		}
+
+		results.WriteString(fmt.Sprintf("%s %d %s\n", f.Name(), f.ModTime().Unix(), md5))
 	}
 
 	return results.String()

@@ -1,9 +1,9 @@
 package client
 
 import (
-	dom "aftp-server/pkg/domain"
 	"bytes"
 	"fmt"
+	dom "github.com/zasei/aftp-server/pkg/domain"
 	"io"
 	"net"
 	"os"

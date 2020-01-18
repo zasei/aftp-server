@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -48,12 +49,12 @@ func ParseRequest(requestString []string) Request {
 		Method:    requestString[0],
 		Protocol:  requestString[2],
 		Headers:   nil,
-		Parameter: requestString[1],
+		Parameter: filepath.Clean(requestString[1]),
 	}
 
 	return parseRequest
 }
 
-func (r Request) printRequest() {
+func (r Request) PrintRequest() {
 	fmt.Printf("Method: %s, Protocol: %s, Headers: %s. Parameter: %s", r.Method, r.Protocol, r.Headers, r.Parameter)
 }

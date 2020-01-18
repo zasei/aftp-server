@@ -1,8 +1,8 @@
 package server
 
 import (
-	dom "aftp-server/pkg/domain"
 	"fmt"
+	dom "github.com/zasei/aftp-server/pkg/domain"
 	"io/ioutil"
 	"net"
 	"os"

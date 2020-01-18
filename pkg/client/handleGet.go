@@ -1,7 +1,7 @@
 package client
 
 import (
-	dom "aftp-server/pkg/domain"
+	dom "github.com/zasei/aftp-server/pkg/domain"
 	"strings"
 )
 

@@ -1,9 +1,9 @@
 package main
 
 import (
-	handler "aftp-server/pkg/client"
 	"fmt"
 	flag "github.com/ogier/pflag"
+	handler "github.com/zasei/aftp-server/pkg/client"
 	"os"
 	"strings"
 )
