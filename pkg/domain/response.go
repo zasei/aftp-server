@@ -39,11 +39,16 @@ func ParseResponse(buf bytes.Buffer) Response {
 	// uncomment this line to show the response before parsing
 	//fmt.Printf("Response string received: %s\n", responseString)
 
-	splitResponse := strings.Split(responseString, "\r\n")
+	splitResponse := strings.Split(responseString, NewLine)
 
-	splitFirstLine := strings.Split(splitResponse[0], " ")
+	splitFirstLine := strings.Split(splitResponse[0], Separator)
 	receivedResponse := Response{
 		Protocol: splitFirstLine[0],
+	}
+
+	if receivedResponse.Protocol != ProtocolVersion {
+		fmt.Println("Protocols do not match, exiting")
+		os.Exit(1)
 	}
 
 	if strings.Contains(responseString, OK) {
@@ -64,13 +69,15 @@ func ParseResponse(buf bytes.Buffer) Response {
 	}
 
 	// TODO: figure out how to split rest properly
-	if len(splitResponse) == 2 {
-		receivedResponse.Content = splitResponse[1]
-	}
 	if len(splitResponse) == 3 {
 		receivedResponse.Headers = make([]string, 1)
 		receivedResponse.Headers[0] = splitResponse[1]
-		receivedResponse.Content = splitResponse[2]
+	}
+	if len(splitResponse) == 4 {
+		receivedResponse.Headers = make([]string, 1)
+		receivedResponse.Headers[0] = splitResponse[1]
+		// splitResponse[2] is an empty line
+		receivedResponse.Content = splitResponse[3]
 	}
 
 	//fmt.Printf("Showing split response lines, total length: %d\n", len(splitResponse))
@@ -82,30 +89,51 @@ func ParseResponse(buf bytes.Buffer) Response {
 }
 
 func (r Response) CreateResponse() string {
+	// create stringBuilder
+	var responseBuilder strings.Builder
+	// add protocol version and start a new line
+	responseBuilder.WriteString(r.Protocol)
+	responseBuilder.WriteString(Separator)
+	// add status code
+	responseBuilder.WriteString(r.StatusCode)
+	responseBuilder.WriteString(NewLine)
+	// if headers are present, add them
 	if len(r.Headers) != 0 {
-		if len(r.Content) == 0 {
-			return r.Protocol + " " + r.StatusCode + "\r\n" + strings.Join(r.Headers, "\r\n") + "\r\n"
-		} else {
-			return r.Protocol + " " + r.StatusCode + "\r\n" + strings.Join(r.Headers, "\r\n") + "\r\n" + r.Content
+		for _, s := range r.Headers {
+			responseBuilder.WriteString(s)
+			responseBuilder.WriteString(NewLine)
 		}
+		// add an empty line between request headers and body
+		responseBuilder.WriteString(NewLine)
 	}
+	// add content if present
 	if len(r.Content) != 0 {
-		return r.Protocol + " " + r.StatusCode + "\r\n" + r.Content
-	} else {
-		return r.Protocol + " " + r.StatusCode + "\r\n"
+		fmt.Printf("Adding content: %s", r.Content)
+		responseBuilder.WriteString(r.Content)
 	}
+	// return stringbuilder as string
+	fmt.Println(responseBuilder.String())
+	return responseBuilder.String()
 }
 
 func (r Response) PrintClientResponse() {
 	switch r.StatusCode {
 	case OK:
-		fmt.Println(r.Content)
+		fmt.Println(removeNewLine(r.Content))
 	default:
-	case BAD_REQUEST, SERVER_ERROR:
-		fmt.Printf("%s\n%s", r.StatusCode, r.Content)
+	case BAD_REQUEST, NOT_FOUND, SERVER_ERROR:
+		if len(r.Content) == 0 {
+			fmt.Printf("Received status code %s", removeNewLine(r.StatusCode))
+		} else {
+			fmt.Printf("Received status code %s with message: %s", removeNewLine(r.StatusCode), r.Content)
+		}
 	}
 }
 
 func (r Response) PrintResponse() {
 	fmt.Printf("Response: { Protocol: %s, StatusCode: %s, Headers: %s, Content: %s } \n", r.Protocol, r.StatusCode, r.Headers, r.Content)
+}
+
+func removeNewLine(msg string) string {
+	return strings.TrimRight(msg, NewLine)
 }

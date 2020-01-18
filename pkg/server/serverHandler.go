@@ -8,7 +8,7 @@ import (
 )
 
 // TODO: Change to other relative path
-const FileDir = "/home/rcomanne/go/src/aftp-server/files"
+const FileDir = "/home/rcomanne/workspace/go/src/aftp-server/files"
 
 func HandleRequest(conn net.Conn) {
 	buf := make([]byte, 1024)

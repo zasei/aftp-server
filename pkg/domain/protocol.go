@@ -1,6 +1,10 @@
 package domain
 
-const ProtocolVersion = "AFTP/1.0"
+const (
+	ProtocolVersion = "AFTP/1.0"
+	Separator       = " "
+	NewLine         = "\r\n"
+)
 
 // request options
 const (

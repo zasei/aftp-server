@@ -2,7 +2,7 @@
 
 ## Project setup
 Ensure that you have this project in your $GOPATH/src directory
-
+Ensure that you change the FileDir constant in serverHandler.go to the path of your choosing.
 
 ### Work with Client
 Install extra packages:
@@ -29,6 +29,6 @@ aftp
 go build
 
 # After which, the binary is created and placed in the dir and can be executed:
-client
-
+# Running this will show the command options
+aftp
 ```
