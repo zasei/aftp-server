@@ -11,6 +11,7 @@ const (
 	ProtocolVersion = "AFTP/1.0"
 	Separator       = " "
 	NewLine         = "\r\n"
+	ETagHeader      = "ETAG:"
 )
 
 // request options

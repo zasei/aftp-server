@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -45,16 +46,35 @@ func (r Request) RequestToString() string {
 }
 
 func ParseRequest(requestString []string) Request {
+	// TODO: Improve header parsing - loop over them and build headers accordingly
+	var headers = make([]string, 1)
+	if (len(requestString)) > 4 {
+		headers[0] = requestString[3] + " " + requestString[4]
+	}
 	parseRequest := Request{
 		Method:    requestString[0],
-		Protocol:  requestString[2],
-		Headers:   nil,
 		Parameter: filepath.Clean(requestString[1]),
+		Protocol:  requestString[2],
+		Headers:   headers,
 	}
 
 	return parseRequest
 }
 
+func (r Request) GetEtag() (etag string, err error) {
+	for _, h := range r.Headers {
+		if strings.Contains(h, ETagHeader) {
+			etag := strings.Split(h, ETagHeader)[1]
+			if len(etag) == 0 {
+				return etag, errors.New("etag is empty")
+			} else {
+				return strings.TrimLeft(etag, " "), nil
+			}
+		}
+	}
+	return "nil", errors.New("no etag present")
+}
+
 func (r Request) PrintRequest() {
-	fmt.Printf("Method: %s, Protocol: %s, Headers: %s. Parameter: %s", r.Method, r.Protocol, r.Headers, r.Parameter)
+	fmt.Printf("Method: %s, Protocol: %s, Headers: %s. Parameter: %s\n", r.Method, r.Protocol, r.Headers, r.Parameter)
 }
