@@ -108,7 +108,7 @@ func (r Response) CreateResponse() string {
 	}
 	// add content if present
 	if len(r.Content) != 0 {
-		fmt.Printf("Adding content: %s", r.Content)
+		fmt.Printf("Adding content: %s\n", r.Content)
 		responseBuilder.WriteString(r.Content)
 	}
 	// return stringbuilder as string

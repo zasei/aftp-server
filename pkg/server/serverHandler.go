@@ -8,7 +8,7 @@ import (
 )
 
 // TODO: Change to other relative path
-const FileDir = ""
+const FileDir = "./files"
 
 func HandleRequest(conn net.Conn) {
 	buf := make([]byte, 1024)
@@ -55,7 +55,7 @@ func doHandle(response dom.Response, conn net.Conn) {
 	_, _ = conn.Write([]byte(createdResponse))
 	err := conn.Close()
 	if err != nil {
-		fmt.Printf("Error sending response %s", err)
+		fmt.Printf("Error sending response %s\n", err)
 	}
 }
 
