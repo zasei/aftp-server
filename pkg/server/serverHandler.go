@@ -26,7 +26,8 @@ func HandleRequest(conn net.Conn) {
 	if len(requestString) < 3 {
 		handleBadRequest(conn, "invalid use of protocol")
 	}
-	parsedRequest := dom.ParseRequest(requestString)
+
+	parsedRequest := dom.ParseRequest(string(buf))
 
 	parsedRequest.PrintRequest()
 

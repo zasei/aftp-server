@@ -6,11 +6,16 @@ import (
 	"strings"
 )
 
+type Header struct {
+	Name  string
+	Value string
+}
+
 // Everything related to the Request - a struct with some parsing methods
 type Request struct {
 	Method    string
 	Protocol  string
-	Headers   []string
+	Headers   []Header
 	Parameter string
 }
 
@@ -33,7 +38,7 @@ func (r Request) RequestToString() string {
 	// if headers are present, add them
 	if len(r.Headers) != 0 {
 		for _, s := range r.Headers {
-			requestBuilder.WriteString(s)
+			requestBuilder.WriteString(fmt.Sprintf("%s: %s", s.Name, s.Value))
 			requestBuilder.WriteString(NewLine)
 		}
 	}
@@ -44,12 +49,31 @@ func (r Request) RequestToString() string {
 	return requestBuilder.String()
 }
 
-func ParseRequest(requestString []string) Request {
+func ParseRequest(requestString string) Request {
+
+	requestLines := strings.Split(requestString, NewLine)
+
+	main := strings.Fields(requestLines[0])
+
+	var headers []Header
+
+	for i := 1; i <= len(requestLines); i++ {
+
+		parts := strings.Split(requestLines[i], ": ")
+
+		header := Header{
+			Name:  parts[0],
+			Value: parts[1],
+		}
+
+		headers = append(headers, header)
+	}
+
 	parseRequest := Request{
-		Method:    requestString[0],
-		Protocol:  requestString[2],
-		Headers:   nil,
-		Parameter: filepath.Clean(requestString[1]),
+		Method:    main[0],
+		Protocol:  main[2],
+		Headers:   headers,
+		Parameter: filepath.Clean(main[1]),
 	}
 
 	return parseRequest
