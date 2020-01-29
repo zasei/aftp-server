@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"fmt"
 	dom "github.com/zasei/aftp-server/pkg/domain"
 	"net"
@@ -11,7 +12,7 @@ import (
 const FileDir = "./files"
 
 func HandleRequest(conn net.Conn) {
-	buf := make([]byte, 1024)
+	buf := make([]byte, 128)
 
 	//Read the incoming connection into the buffer
 	_, err := conn.Read(buf)
@@ -27,7 +28,7 @@ func HandleRequest(conn net.Conn) {
 		handleBadRequest(conn, "invalid use of protocol")
 	}
 
-	parsedRequest := dom.ParseRequest(string(buf))
+	parsedRequest := dom.ParseRequest(string(bytes.Trim(buf, "\x00")))
 
 	parsedRequest.PrintRequest()
 

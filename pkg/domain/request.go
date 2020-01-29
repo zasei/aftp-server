@@ -52,13 +52,17 @@ func (r Request) RequestToString() string {
 
 func ParseRequest(requestString string) Request {
 
-	requestLines := strings.Split(requestString, NewLine)
+	requestLines := strings.Split(strings.TrimRight(requestString, NewLine), NewLine)
 
 	main := strings.Fields(requestLines[0])
 
 	var headers []Header
 
-	for i := 1; i <= len(requestLines); i++ {
+	for i := 1; i < len(requestLines); i++ {
+
+		if requestLines[i] == "" {
+			continue
+		}
 
 		parts := strings.Split(requestLines[i], ": ")
 
@@ -80,18 +84,13 @@ func ParseRequest(requestString string) Request {
 	return parseRequest
 }
 
-func (r Request) GetEtag() (etag string, err error) {
-	for _, h := range r.Headers {
-		if strings.Contains(h, ETagHeader) {
-			etag := strings.Split(h, ETagHeader)[1]
-			if len(etag) == 0 {
-				return etag, errors.New("etag is empty")
-			} else {
-				return strings.TrimLeft(etag, " "), nil
-			}
+func (r Request) GetHeader(headerName string) (header Header, err error) {
+	for _, header := range r.Headers {
+		if strings.Contains(header.Name, headerName) {
+			return header, nil
 		}
 	}
-	return "nil", errors.New("no etag present")
+	return Header{}, errors.New(fmt.Sprintf("%s is not present", headerName))
 }
 
 func (r Request) PrintRequest() {

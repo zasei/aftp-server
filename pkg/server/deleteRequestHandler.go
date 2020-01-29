@@ -16,11 +16,11 @@ func handleDeleteRequest(request dom.Request, conn net.Conn) {
 		// if error while getting hash return SERVER ERROR
 		createdResponse = dom.NewResponseWithContent(dom.SERVER_ERROR, err.Error())
 	} else {
-		etag, err := request.GetEtag()
+		header, err := request.GetHeader(dom.ETagHeader)
 		if err != nil {
 			// no ETeg present in the request, return bad request
 			createdResponse = dom.NewResponseWithContent(dom.BAD_REQUEST, "No ETag header present.")
-		} else if md5 != etag {
+		} else if md5 != header.Value {
 			// hashes differ - do not delete
 			createdResponse = dom.NewResponseWithContent(dom.BAD_REQUEST, "Hashes do NOT match.")
 		} else {

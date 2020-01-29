@@ -6,10 +6,16 @@ import (
 )
 
 func HandleListRequest(dirs []string) {
+
+	since := dom.Header{
+		Name:  "Since",
+		Value: "1579375568",
+	}
+
 	request := dom.Request{
 		Method:    dom.LIST,
 		Protocol:  dom.ProtocolVersion,
-		Headers:   nil,
+		Headers:   []dom.Header{since},
 		Parameter: strings.Join(dirs, ","),
 	}
 

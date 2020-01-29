@@ -21,17 +21,21 @@ func HandleDeleteRequest(files []string) {
 		md5, _ := dom.HashFileMd5(openFile.Name())
 		fmt.Println("md5: " + md5)
 
+		etagHeader := dom.Header{
+			Name:  dom.ETagHeader,
+			Value: md5,
+		}
+
 		// create the request
 		request := dom.Request{
 			Method:    dom.DELETE,
 			Protocol:  dom.ProtocolVersion,
-			Headers:   []string{fmt.Sprintf("%s %s", dom.ETagHeader, md5)},
+			Headers:   []dom.Header{etagHeader},
 			Parameter: strings.Join(files, ","),
 		}
 
 		request.PrintRequest()
 
-		// handle the request
 		response := doHandle(request)
 		response.PrintClientResponse()
 	}
