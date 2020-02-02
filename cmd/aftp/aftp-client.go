@@ -12,6 +12,7 @@ var (
 	list   string
 	get    string
 	put    string
+	etag   string
 	remove string
 )
 
@@ -36,7 +37,13 @@ func main() {
 	} else if len(put) != 0 {
 		files := strings.Split(put, ",")
 		fmt.Printf("")
-		handler.HandlePutRequest(files)
+		if len(etag) != 0 {
+			// ETag given
+			handler.HandlePutRequest(files, strings.Split(etag, ","))
+		} else {
+			// NO ETag given
+			handler.HandlePutRequest(files, make([]string, 0))
+		}
 	} else if len(remove) != 0 {
 		files := strings.Split(remove, ",")
 		fmt.Printf("")
@@ -48,5 +55,6 @@ func init() {
 	flag.StringVarP(&list, "list", "l", "", "List files")
 	flag.StringVarP(&get, "get", "g", "", "Copy file")
 	flag.StringVarP(&put, "put", "p", "", "Put a file")
+	flag.StringVarP(&etag, "etag", "e", "", "ETag to provide for PUT")
 	flag.StringVarP(&remove, "remove", "r", "", "Remove a file")
 }

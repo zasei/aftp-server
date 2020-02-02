@@ -18,6 +18,7 @@ type Request struct {
 	Protocol  string
 	Headers   []Header
 	Parameter string
+	Content   []byte
 }
 
 func (r Request) RequestToString() string {
@@ -45,6 +46,10 @@ func (r Request) RequestToString() string {
 	}
 	// add an empty line between request headers and body
 	requestBuilder.WriteString(NewLine)
+
+	// add the content to the request
+	requestBuilder.Write(r.Content)
+
 	// uncomment this line to view request
 	//fmt.Println(requestBuilder.String())
 	return requestBuilder.String()
@@ -57,6 +62,7 @@ func ParseRequest(requestString string) Request {
 	main := strings.Fields(requestLines[0])
 
 	var headers []Header
+	var content []byte
 
 	for i := 1; i < len(requestLines); i++ {
 
@@ -66,6 +72,12 @@ func ParseRequest(requestString string) Request {
 
 		parts := strings.Split(requestLines[i], ": ")
 
+		// if we do not have two parts, that means it was not a header line
+		if len(parts) != 2 {
+			content = []byte(requestLines[i])
+			continue
+		}
+
 		header := Header{
 			Name:  parts[0],
 			Value: parts[1],
@@ -74,14 +86,15 @@ func ParseRequest(requestString string) Request {
 		headers = append(headers, header)
 	}
 
-	parseRequest := Request{
+	parsedRequest := Request{
 		Method:    main[0],
 		Protocol:  main[2],
 		Headers:   headers,
 		Parameter: filepath.Clean(main[1]),
+		Content:   content,
 	}
 
-	return parseRequest
+	return parsedRequest
 }
 
 func (r Request) GetHeader(headerName string) (header Header, err error) {

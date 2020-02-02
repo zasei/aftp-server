@@ -8,11 +8,13 @@ import (
 )
 
 const (
-	ProtocolVersion = "AFTP/1.0"
-	Separator       = " "
-	NewLine         = "\r\n"
-	ETagHeader      = "ETAG"
-	SinceHeader     = "Since"
+	ProtocolVersion     = "AFTP/1.0"
+	Separator           = " "
+	NewLine             = "\r\n"
+	ETagHeader          = "ETag"
+	SinceHeader         = "Since"
+	LastModifiedHeader  = "Last-Modified"
+	ContentLengthHeader = "Content-Length"
 )
 
 // request options

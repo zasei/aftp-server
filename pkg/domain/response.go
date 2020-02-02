@@ -19,7 +19,7 @@ func NewResponseWithContent(statusCode string, content string) Response {
 	response := Response{}
 	response.Protocol = ProtocolVersion
 	response.StatusCode = statusCode
-	response.Headers = []string{fmt.Sprintf("Content-Length: %d", CalculateContentLength(content))}
+	response.Headers = []string{fmt.Sprintf("%s: %d", ContentLengthHeader, CalculateContentLength(content))}
 	response.Content = content
 	return response
 }
@@ -119,7 +119,11 @@ func (r Response) CreateResponse() string {
 func (r Response) PrintClientResponse() {
 	switch r.StatusCode {
 	case OK:
-		fmt.Println(removeNewLine(r.Content))
+		if len(r.Content) == 0 {
+			fmt.Printf("%s, %s", r.StatusCode, r.Headers)
+		} else {
+			fmt.Println(removeNewLine(r.Content))
+		}
 	default:
 	case BAD_REQUEST, NOT_FOUND, SERVER_ERROR:
 		if len(r.Content) == 0 {

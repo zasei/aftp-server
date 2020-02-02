@@ -12,7 +12,7 @@ import (
 const FileDir = "./files"
 
 func HandleRequest(conn net.Conn) {
-	buf := make([]byte, 128)
+	buf := make([]byte, 4294967296)
 
 	//Read the incoming connection into the buffer
 	_, err := conn.Read(buf)

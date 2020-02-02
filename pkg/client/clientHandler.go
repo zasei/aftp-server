@@ -1,7 +1,6 @@
 package client
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	dom "github.com/zasei/aftp-server/pkg/domain"
@@ -29,11 +28,6 @@ func doHandle(request dom.Request) dom.Response {
 
 	// Write to remote connection
 	fmt.Fprintf(conn, requestString)
-
-	f, _ := os.Create("test.dat")
-	w := bufio.NewWriter(f)
-
-	fmt.Fprint(w, requestString)
 
 	// create buffer and copy bytes to it
 	var buf bytes.Buffer
