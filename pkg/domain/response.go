@@ -125,7 +125,7 @@ func (r Response) PrintClientResponse() {
 			fmt.Println(removeNewLine(r.Content))
 		}
 	default:
-	case BAD_REQUEST, NOT_FOUND, SERVER_ERROR:
+	case BAD_REQUEST, NOT_FOUND, SERVER_ERROR, LOCKED:
 		if len(r.Content) == 0 {
 			fmt.Printf("Received status code %s", removeNewLine(r.StatusCode))
 		} else {

@@ -36,7 +36,8 @@ const (
 )
 
 const (
-	HOST = "127.0.0.1"
+	//HOST = "rcomanne.nl"
+	HOST = "localhost"
 	PORT = "1337"
 	TYPE = "tcp"
 )

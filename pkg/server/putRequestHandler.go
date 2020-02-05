@@ -53,19 +53,27 @@ func handlePutRequest(request dom.Request, conn net.Conn) {
 	}
 
 	// ETag etagHeader is NOT present, handle uploading of NEW file
-	// create file
-	file, err := os.Create(filePath)
-	if err != nil {
-		// handle error of being unable to create file
-		createdResponse = internalServerError(request.Parameter)
-	} else if file != nil {
-		// file is present, write to it
-		_, err := file.Write(request.Content)
-		md5, err := dom.HashFileMd5(filePath)
+
+	// check if file already exists - if it does we need the ETag header
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		// File does not exist - we do NOT need the ETag header and we can create the new file
+		// create file
+		file, err := os.Create(filePath)
 		if err != nil {
+			// handle error of being unable to create file
 			createdResponse = internalServerError(request.Parameter)
+		} else if file != nil {
+			// file is present, write to it
+			_, err := file.Write(request.Content)
+			md5, err := dom.HashFileMd5(filePath)
+			if err != nil {
+				createdResponse = internalServerError(request.Parameter)
+			}
+			createdResponse = dom.NewResponseWithContent(dom.OK, md5)
 		}
-		createdResponse = dom.NewResponseWithContent(dom.OK, md5)
+	} else {
+		// file does exist -  we need the ETag header
+		createdResponse = dom.NewResponseWithContent(dom.LOCKED, "md5 hash is missing")
 	}
 
 	createdResponse.PrintResponse()

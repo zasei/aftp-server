@@ -10,6 +10,7 @@ import (
 )
 
 // TODO: Change to other relative path
+//const FileDir = "/opt/aftp-server"
 const FileDir = "./files"
 
 func HandleRequest(conn net.Conn) {
