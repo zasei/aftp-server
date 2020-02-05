@@ -11,12 +11,15 @@ pipeline {
 		githubPush()
 	}
 
-
 	stages {
 		stage('Build') {
 			steps {
 			    dir('cmd/server') {
 			        echo "build server"
+			        sh "whoami"
+			        sh "ls -la"
+			        sh "which go"
+			        sh "go version"
 			        sh "go get"
                     sh "go build"
                 }
