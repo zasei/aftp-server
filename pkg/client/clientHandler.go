@@ -2,9 +2,11 @@ package client
 
 import (
 	"bytes"
+	"encoding/gob"
 	"fmt"
 	dom "github.com/zasei/aftp-server/pkg/domain"
 	"io"
+	"log"
 	"net"
 	"os"
 )
@@ -20,28 +22,17 @@ func doHandle(request dom.Request) dom.Response {
 
 	defer conn.Close()
 
-	// Create the request as a String literal
-	requestString := request.RequestToString()
+	enc := gob.NewEncoder(conn)
 
-	// Uncomment this line to view the request string
-	//fmt.Printf("Request String: %s\n", requestString)
+	err := enc.Encode(request)
 
-	// Write to remote connection
-	_, writeErr := conn.Write([]byte(requestString))
-
-	if writeErr != nil {
-		fmt.Printf("Error while sending request.\n%s\n", writeErr)
+	if err != nil {
+		log.Fatal("encode error:", err)
 	}
 
-	//fmt.Fprintf(conn, requestString)
-
-	// create buffer and copy bytes to it
 	var buf bytes.Buffer
 	io.Copy(&buf, conn)
 	receivedResponse := dom.ParseResponse(buf)
-
-	// uncomment this line to show the full parse response
-	//receivedResponse.PrintResponse()
 
 	return receivedResponse
 }
